@@ -1,0 +1,161 @@
+#include<ESP8266WiFi.h>
+#include<ESP8266WebServer.h>
+ESP8266WebServer saff(80); // saff - Semi-Autonomous Fire Fighting Robot
+const char *ssid = "AS";
+const char *password = "123456789";
+const int Mdec = D4;
+const int Ndec = D3;
+const int Pdec = D2;
+String page="<center><h1>Semi Autonomous Fire Fighting Robot</h1><body><p><a
+href=\"F\"><button>Forward</button></a><a
+href=\"B\"><button>Backward</button></a></p><p> <a href = \"L\"> <button>
+Left</button></a> <a href = \" R\"> <button> Right</button></a> </p> <p> <a href = \"S\">
+<button> Stop</button> </a> </p> <p> <a href = \"s1\"> <button> Sensor1 </button> </a> </p>
+<p> <a href = \"s2\"><button> Sensor2 </button> </a> </p> <p> <a href = \"s3\"><button>
+Sensor3 </button> </a> </p><p> <a href = \"D\"><button> Differentialturn </button> </a>
+</p></body>";
+
+void setup() {
+// put your setup code here, to run once:
+pinMode(D5,OUTPUT);
+pinMode(D6,OUTPUT);
+pinMode(D7,OUTPUT);
+pinMode(D8,OUTPUT);
+pinMode(Mdec,INPUT);
+pinMode(Ndec,INPUT);
+pinMode(Pdec,INPUT);
+Serial.begin(115200);
+WiFi.softAP(ssid,password);
+Serial.print(WiFi.softAPIP());
+saff.begin();
+saff.on("/",webpage);
+saff.on("/F",Forward);
+saff.on("/B",Backward);
+saff.on("/L",Left);
+saff.on("/R",Right);
+saff.on("/D",Differentialturn);
+saff.on("/S",Stop);
+saff.on("/s1",sensor1);
+saff.on("/s2",sensor2);
+saff.on("/s3",sensor3);
+}
+void webpage() {
+saff.send(200,"text/html",page);
+}
+
+void Forward(){
+digitalWrite(D5,HIGH);
+digitalWrite(D6,LOW);
+digitalWrite(D7,HIGH);
+digitalWrite(D8,LOW);
+Serial.print("F");
+
+String page1= "<p> MOTOR Status : Motor is in forward direction </p>";
+saff.send(200,"text/html",page+page1);
+}
+
+void Backward(){
+digitalWrite(D5,LOW);
+digitalWrite(D6,HIGH);
+digitalWrite(D7,LOW);
+digitalWrite(D8,HIGH);
+Serial.print("B");
+
+String page2= "<p> MOTOR Status : Motor is in backward direction </p>";
+saff.send(200,"text/html",page+page2);
+}
+
+void Left(){
+digitalWrite(D5,LOW);
+digitalWrite(D6,LOW);
+digitalWrite(D7,HIGH);
+digitalWrite(D8,LOW);
+Serial.print("L");
+
+String page3= "<p> MOTOR Status : Motor turns left </p>";
+saff.send(200,"text/html",page+page3);
+}
+
+void Right(){
+digitalWrite(D5,HIGH);
+digitalWrite(D6,LOW);
+digitalWrite(D7,LOW);
+digitalWrite(D8,LOW);
+Serial.print("R");
+
+String page4= "<p> MOTOR Status : Motor turns right </p>";
+saff.send(200,"text/html",page+page4);
+}
+
+void Differentialturn(){
+digitalWrite(D5,HIGH);
+digitalWrite(D6,LOW);
+digitalWrite(D7,LOW);
+digitalWrite(D8,HIGH);
+Serial.print("D");
+
+String page4= "<p> MOTOR Status : Motor turns right </p>";
+saff.send(200,"text/html",page+page4);
+}
+
+void Stop(){
+digitalWrite(D5,LOW);
+digitalWrite(D6,LOW);
+digitalWrite(D7,LOW);
+digitalWrite(D8,LOW);
+Serial.print("S");
+
+String page5= "<p> MOTOR Status : Motor Stops </p>";
+saff.send(200,"text/html",page+page5);
+}
+
+void sensor1(){
+int sensor1value;
+sensor1value = digitalRead(D4);
+if(sensor1value == LOW){
+String page6 = "<p> Status : Fire Identified </p>";
+saff.send(200,"text/html",page+page6);
+Serial.print("Tunnel is Blocked");
+}
+else {
+String page7 = "<p> Status : There is no fire </p>";
+saff.send(200,"text/html",page+page7);
+Serial.print("Tunnel is clear");
+}
+}
+
+void sensor2(){
+int sensor2value;
+sensor2value = digitalRead(D3);
+if(sensor2value == LOW){
+String page8 = "<p> Status : Fire Identified </p>";
+saff.send(200,"text/html",page+page8);
+Serial.print("Tunnel is Blocked");
+}
+else {
+String page9 = "<p> Status : There is no fire </p>";
+saff.send(200,"text/html",page+page9);
+Serial.print("Tunnel is clear");
+}
+}
+void sensor3(){
+int sensor3value;
+sensor3value = digitalRead(D2);
+if(sensor3value == LOW){
+String page10 = "<p> Status : Fire Identified </p>";
+saff.send(200,"text/html",page+page10);
+Serial.print("Tunnel is Blocked");
+}
+else {
+String page11 = "<p> Status : There is no fire </p>";
+saff.send(200,"text/html",page+page11);
+Serial.print("Tunnel is clear");
+}
+}
+
+void loop() {
+// put your main code here, to run repeatedly:
+
+saff.handleClient();
+
+}
